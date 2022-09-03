@@ -27,6 +27,10 @@ This is a Multi-Address Vote Monitoring Tool for the Solar Network.
 
 ## Changelog
 
+### 0.3
+
+- updated for Core 4.1
+
 ### 0.2
 
 - logic rewrite to consider total rewards instead of per-address rewards

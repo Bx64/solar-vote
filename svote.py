@@ -73,7 +73,7 @@ async def get_address_data(name, address):
         voted_balance = delegate_votes_dict[voted_name]
         voted_rank = cur_rank_get(voted_name)
         if voted_rank in range(1, int(active_delegates) + 1) and voted_name in delegate_share_dict:
-            reward = round(int(address_balance) / int(voted_balance) * 10800 / int(active_delegates) * dynamic_rewards[str(voted_rank)] * delegate_share_dict[voted_name] / 100 * (100 - devfund) / 100 / atomic, 3)
+            reward = round(int(address_balance) / int(voted_balance) * 10800 / int(active_delegates) * dynamic_rewards[str(voted_rank)] * delegate_share_dict[voted_name] / 100 * (100 - donations) / 100 / atomic, 3)
         else:
             reward = 0
     elif votes_len == 0:
@@ -120,22 +120,22 @@ def address_reward(name):
                 old_rank_change = 0
 
             if new_rank in range(1, int(active_delegates) + 1) and (old_rank <= int(active_delegates) or old_rank_change == 0):
-                current_rewards_temp[name] = round(class_dict[name].balance / delegate_votes_temp[delegate] * 10800 / int(active_delegates) * dynamic_rewards[str(new_rank)] * delegate_share_dict[delegate] / 100 * (100 - devfund) / 100 / atomic, 3)
+                current_rewards_temp[name] = round(class_dict[name].balance / delegate_votes_temp[delegate] * 10800 / int(active_delegates) * dynamic_rewards[str(new_rank)] * delegate_share_dict[delegate] / 100 * (100 - donations) / 100 / atomic, 3)
                 current_ranks_temp[name] = new_rank
 
                 for temp_name in addresses:
 
                     if temp_name != name and class_dict[temp_name].voted_name == delegate:
-                        current_rewards_temp[temp_name] = round(class_dict[temp_name].balance / delegate_votes_temp[delegate] * 10800 / int(active_delegates) * dynamic_rewards[str(new_rank)] * delegate_share_dict[delegate] / 100 * (100 - devfund) / 100 / atomic, 3)
+                        current_rewards_temp[temp_name] = round(class_dict[temp_name].balance / delegate_votes_temp[delegate] * 10800 / int(active_delegates) * dynamic_rewards[str(new_rank)] * delegate_share_dict[delegate] / 100 * (100 - donations) / 100 / atomic, 3)
                         current_ranks_temp[temp_name] = new_rank
                     elif temp_name != name and class_dict[temp_name].voted_name == class_dict[name].voted_name and class_dict[name].voted_name != 'N/A' and class_dict[name].voted_name in delegate_share_dict:
-                        current_rewards_temp[temp_name] = round(class_dict[temp_name].balance / delegate_votes_temp[class_dict[name].voted_name] * 10800 / int(active_delegates) * dynamic_rewards[str(old_rank)] * delegate_share_dict[class_dict[name].voted_name] / 100 * (100 - devfund) / 100 / atomic, 3)
+                        current_rewards_temp[temp_name] = round(class_dict[temp_name].balance / delegate_votes_temp[class_dict[name].voted_name] * 10800 / int(active_delegates) * dynamic_rewards[str(old_rank)] * delegate_share_dict[class_dict[name].voted_name] / 100 * (100 - donations) / 100 / atomic, 3)
                         current_ranks_temp[temp_name] = old_rank
                     elif temp_name != name and class_dict[temp_name].voted_name not in {class_dict[name].voted_name, 'N/A'} and class_dict[temp_name].voted_name in delegate_share_dict:
                         temp_rank = sorted_votes.index(delegate_votes_temp[class_dict[temp_name].voted_name])+1
                         if temp_rank != current_ranks_temp[temp_name]:
                             if temp_rank <= int(active_delegates):
-                                current_rewards_temp[temp_name] = round(class_dict[temp_name].balance / delegate_votes_temp[class_dict[temp_name].voted_name] * 10800 / int(active_delegates) * dynamic_rewards[str(temp_rank)] * delegate_share_dict[class_dict[temp_name].voted_name] / 100 * (100 - devfund) / 100 / atomic, 3)
+                                current_rewards_temp[temp_name] = round(class_dict[temp_name].balance / delegate_votes_temp[class_dict[temp_name].voted_name] * 10800 / int(active_delegates) * dynamic_rewards[str(temp_rank)] * delegate_share_dict[class_dict[temp_name].voted_name] / 100 * (100 - donations) / 100 / atomic, 3)
                             else:
                                 current_rewards_temp[temp_name] = 0
                             current_ranks_temp[temp_name] = temp_rank
@@ -163,7 +163,7 @@ current_ranks_dict = {}
 class_dict = {}
 tasks = []
 atomic = 100000000
-devfund = 0
+donations = 0
 
 share_data = api_get(sapi)
 network_data = api_get(api + '/node/configuration')
@@ -175,9 +175,9 @@ dynamic_rewards = network_data['data']['constants']['dynamicReward']['ranks']
 dynamic_rewards[str(int(active_delegates+1))] = 0
 dynamic_rewards[str(int(active_delegates+2))] = 0
 
-if network_data['data']['constants'].get('devFund'):
-    for address in network_data['data']['constants']['devFund']:
-        devfund += network_data['data']['constants']['devFund'][address]
+if network_data['data']['constants'].get('donations'):
+    for address in network_data['data']['constants']['donations']:
+        donations += network_data['data']['constants']['donations'][address]
 
 for i in range(0, share_count):
     del_name = share_data['data'][i]['username']

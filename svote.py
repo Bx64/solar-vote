@@ -177,7 +177,7 @@ dynamic_rewards[str(int(active_delegates+2))] = 0
 
 if network_data['data']['constants'].get('donations'):
     for address in network_data['data']['constants']['donations']:
-        donations += network_data['data']['constants']['donations'][address]
+        donations += network_data['data']['constants']['donations'][address]['percent']
 
 for i in range(0, share_count):
     del_name = share_data['data'][i]['username']
